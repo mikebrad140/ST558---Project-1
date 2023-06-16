@@ -1,0 +1,16 @@
+---
+title: "ST558: Project 1"
+author: "Michael Bradshaw"
+date: "`r Sys.Date()`" 
+---
+
+
+```{r createProject1, eval=FALSE, echo=FALSE}
+rmarkdown::render(
+  input = "C://Users//mbradshaw//OneDrive - Research Triangle Institute//Documents//Graduate School Courses//ST 558//Project 1//ST558---Project-1//ST558_Project1.Rmd",
+  output_format = "github_document",
+  output_dir = "C://Users//mbradshaw//OneDrive - Research Triangle Institute//Documents//Graduate School Courses//ST 558//Project 1//ST558---Project-1",
+  output_file = "README.md",
+  output_options = list(keep_html = FALSE, html_preview=FALSE)
+)
+```  

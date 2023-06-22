@@ -85,17 +85,17 @@ getRecipeNutritionById <- function(recipe_id) {
   return(parsed_data)
 }
 
-# Pulling pasta recipes that are ready in 90 minutes
+# Pulling pasta recipes that are ready in 45 minutes
 apiKey <- "6495f41712b644cebe48728831b9d5b1"
 query <- "pasta"
 cuisine <- NULL
 diet <- NULL
-includeIngredients <- NULL
+includeIngredients <- "cheese"
 excludeIngredients <- NULL
-maxReadyTime <- 90
-number <- 200
+maxReadyTime <- 45
+number <- 100
 
-# set diet to Null, set include ingredient to null
+# set query, includeIngredients, maxReadyTime, and number - all others to NULL
 recipes <- getRecipes(apiKey, query, cuisine, diet, includeIngredients, excludeIngredients, maxReadyTime, number)
 
 # Nest step: - create data frame from our recipes of interest
@@ -229,3 +229,60 @@ recipe_df1 %>%
             min_readyInMinutes = min(readyInMinutes),
             max_readyInMinutes = max(readyInMinutes))
 
+# Now Create Plots:
+
+# 1st plot: Histogram showing distribution of YummyScores
+hist_plot <- ggplot(recipe_df1, aes(x = yummyScore)) +
+  geom_histogram(fill = "blue", color = "white", bins=10) +
+  labs(x = "Yummy Score", y = "Frequency", title = "Distribution of Yummy Scores 0-100") +
+  theme_classic()
+
+hist_plot
+
+# 2nd plot: Box plot showing Distribution of Health Scores by Expensive
+box_plot <- ggplot(recipe_df1, aes(x = expensive, y = healthScore, fill = expensive)) +
+  geom_boxplot() +
+  labs(x = "Expensive", y = "Health Scores", title = "Health Scores by Expensive Category") +
+  theme_classic()
+
+box_plot
+
+# 3rd plot: Scatter plot showing calories by Price Per Serving
+recipe_df1$pricePerServing <- as.numeric(recipe_df1$pricePerServing)
+recipe_df1$calories <- as.numeric(recipe_df1$calories)
+
+correlation <- cor(as.numeric(recipe_df1$calories), recipe_df1$pricePerServing)
+
+scatter_plot <- ggplot(recipe_df1, aes(x = calories, y = pricePerServing, color=expensive)) +
+  geom_point() +
+  scale_x_continuous(breaks = seq(0, 1000, 100))+
+  labs(x = "Calories", y = "Price Per Serving", title = "Calories vs. Price Per Serving") +
+  theme_classic()
+
+scatter_plot +
+  geom_label(x = 200, y = 600, size = 4, 
+            label = paste0("Correlation = ", round(correlation, 2)), show.legend = FALSE)
+
+# 4th plot: Bar plot of counts for high health score and yummy category
+bar_plot <- ggplot(recipe_df1, aes(x = highHealthScore, fill = yummyCategory)) +
+  geom_bar(position = "dodge") +
+  labs(x = "High Health Score", y = "Count of Recipes", title = "Count of Recipes by Yummy Categories and High Health Score") +
+  scale_fill_manual(values = c("lightblue", "lightpink", "lightgreen", "lightyellow")) +
+  theme_light()
+
+bar_plot
+
+# 5th plot: Box plot of protein content by dairy-free category
+recipe_df1$protein_num <- as.integer(gsub("g", "", recipe_df1$protein))
+
+box_plot2 <- ggplot(recipe_df1, aes(x = dairyFree, y = protein_num, fill = dairyFree)) +
+  geom_boxplot() +
+  labs(x = "Dairy-Free", y = "Protein Content in grams", title = "Distribution of Protein Content by Dairy-Free Category") +
+  theme_minimal() +
+  scale_fill_manual(values = c("red", "gray"), labels = c("Not Dairy-Free", "Dairy-Free")) +
+  guides(fill = guide_legend(title = "Dairy-Free"))
+
+box_plot2
+
+
+recipe_df1$title

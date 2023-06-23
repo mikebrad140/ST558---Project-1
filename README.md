@@ -1,4 +1,6 @@
-ST558: Project 1
+ST558: Project 1 - Contacting the Spoonacular API using functions to
+query, parse, and return well-structured data. Then doing some EDA on
+the resulting data.
 ================
 Michael Bradshaw
 2023-06-23
@@ -14,12 +16,13 @@ To access more recipe data from the API, I wrote functions to pull from
 different endpoints to capture recipe information, taste information,
 and nutrition information. To determine how to request query the
 information, you need to read the
-[Documentation](https://spoonacular.com/food-api/docs). My functions
+[documentation](https://spoonacular.com/food-api/docs). My functions
 allows users to pull recipes by query (keyword), cuisine (i.e. italian,
 french, etc.), diet (i.e. vegan, paleo, etc.), the ability to include or
 exclude certain ingredients, the maximum time it takes to make the
 recipe, and the maximum number of recipes to return (1-100). If you do
-not want to specify a certain parameter, you can set it to NULL.
+not want to specify a certain parameter, you can set it to missing
+(i.e. NULL).
 
 ``` r
 # Function to query the Spoonacular API and find a set recipes that we want to explore:
@@ -115,7 +118,7 @@ number <- 100
 recipes <- getRecipes(apiKey, query, cuisine, diet, includeIngredients, excludeIngredients, maxReadyTime, number)
 ```
 
-### Next, we want to take the recipes from our search parameters and use their recipe ID’s to pull additional information from other parts of the API. This includes pulling 1) recipe information, 2) taste information, and 3) nutrition information. We iterate over each recipeID and create a new data frame with this information for each of recipes from our search query. The resulting dataframe contains 1 row per recipe, with columns containing information about the recipe.
+### Next, we want to take the returned recipes from our search parameters and use their recipe ID’s to pull additional information from other parts of the spoonacular API. This includes pulling 1) detailed recipe information, 2) taste information, and 3) nutrition information. Then, we iterate over each recipeID and create a new data frame with this information for each of the recipes returned from our search query. The resulting dataframe contains 1 row per recipe, with columns containing information about the recipe.
 
 ``` r
 # Next step: - create data frame from our recipes of interest
@@ -175,7 +178,7 @@ for (recipe_id in recipes$id) {
 }
 ```
 
-### Next we want to create new variables including 1) an indicator variable to identify if the recipe is expensive, 2) an indicator variable to identify if the variable has a high health score, 3) a overall taste score called yummyScore, which combines the sweetness and savoriness scores, while subtracting the bitterness score, and 4) categorizing the yummyScore variable into four categories based on quartiles of their yummyScore.
+### Now that we have our data in a nice format, let’s create new variables including 1) an indicator variable to identify if the recipe is expensive, 2) an indicator variable to identify if the variable has a high health score, 3) a overall taste score called yummyScore, which combines the sweetness and savoriness scores, while subtracting the bitterness score, and 4) categorizing the yummyScore variable into four categories based on quartiles of their yummyScore.
 
 ``` r
 # Now lets create some new variables 
@@ -190,7 +193,7 @@ recipe_df1 <- recipe_df1 %>% mutate(expensive = ifelse(pricePerServing > quantil
                                      include.lowest = TRUE))
 ```
 
-### Next, lets create some contingency tables to examine some of our categorical variables:
+### Now let’s begin our exploatory data analysis. So we will create some contingency tables to examine some of our categorical variables:
 
     1. First we'll look at a contingency table of expensive recipes by vegetarian recipes.  
     2. Second, we'll look at a contingency table of yummy score categories by healthy recipes.
@@ -211,14 +214,14 @@ contingency_table1
     ##   Not Expensive             67          5
     ##   Expensive                 22          2
 
-In the first table, we see that in the “Not Vegetarian” category, there
+In the first table, we see that in the Not Vegetarian category, there
 are 67 recipes classified as not vegetarian and not expensive.
 Additionally, there are 22 recipes classified as not vegetarian and
-considered to be expensive. On the other hand, in the “Vegetarian”
+considered to be expensive. On the other hand, in the Vegetarian
 category, there are only 5 recipes classified as vegetarian and
 considered to be not expensive, while there are 2 recipes classified as
 vegetarian and considered to be expensive. This table shows the lack of
-vegetarian options available in our data.
+vegetarian options available in our queried data.
 
 ``` r
 #2nd table: Yummy Score Category by high Health Score
@@ -260,7 +263,7 @@ healthy. Lastly, there are only five recipes that are not gluten free
 and very healthy. Of the 5 gluten free recipes, 4 are not very healthy
 and 1 is very healthy.
 
-### Next, we create numerical summaries for some quantitative variables at each setting of some of categorical variables
+### After creating our contingency tables, let’s now create numerical summaries for some of the quantitative variables at each setting of some of categorical variables
 
 ``` r
 # Summary 1:  pricePerServing by expensive categories:
@@ -366,9 +369,11 @@ hist_plot <- ggplot(recipe_df1, aes(x = yummyScore)) +
 hist_plot
 ```
 
-![](README_files/figure-gfm/plot1-1.png)<!-- --> In this first
-histogram, we see that the distribution of yummy scores has a relatively
-normal distribution with values of scores ranging from -50 to 150.
+![](README_files/figure-gfm/plot1-1.png)<!-- -->
+
+In this first histogram, we see that the distribution of yummy scores
+has a relatively normal distribution with values of scores ranging from
+-50 to 150.
 
 ``` r
 # 2nd plot: Box plot showing Distribution of Health Scores by Expensive
@@ -380,13 +385,15 @@ box_plot1 <- ggplot(recipe_df1, aes(x = expensive, y = healthScore, fill = expen
 box_plot1
 ```
 
-![](README_files/figure-gfm/plot2-1.png)<!-- --> In this first box plot,
-we see that the mean health scores for expensive recipes are higher than
-non-expensive recipes. We also observe a greater range in health scores
-in the expensive recipes compared to non-expensive recipes. Finally, we
-also notice that there appear to be multiple outliers in health scores
-across the non-expensive recipe category, which may be inflating the
-mean health scores for non-expensive recipes.
+![](README_files/figure-gfm/plot2-1.png)<!-- -->
+
+In this first box plot, we see that the mean health scores for expensive
+recipes are higher than non-expensive recipes. We also observe a greater
+range in health scores in the expensive recipes compared to
+non-expensive recipes. Finally, we also notice that there appear to be
+multiple outliers in health scores across the non-expensive recipe
+category, which may be inflating the mean health scores for
+non-expensive recipes.
 
 ``` r
 # 3rd plot: Bar plot of counts for high health score and yummy category
@@ -461,3 +468,5 @@ yummy category of the recipe, which appears relatively random and spread
 out for this scatter plot comparison. So there is little to no
 correlation between yummy category and the number of calories in the
 recipe or the price per serving of the recipe.
+
+### Conclusion: This project focused on using the Spoonacular API to query, parse, and return recipe data. Functions helped us interact with the API and retrieve recipe information based on various search parameters. We chose to query pasta recipes that contained cheese, but did not contain tomatoes, that could be ready in 45 minutes. On this resulting dataframe, we performed exploratory data analysis to examine certain characteristics of our returned recipe data.

@@ -1,7 +1,10 @@
 ---
-title: "ST558: Project 1 - Contacting the Spoonacular API using functions to query, parse, and return well-structured data. Then doing some EDA on the resulting data."
-author: "Michael Bradshaw"
-date: "`r Sys.Date()`" 
+title: "ST558: Project 1 - Contacting the Spoonacular API using functions to query, parse, and return well-structured data. Then doing some EDA on the resulting data."  
+
+author: "Michael Bradshaw"  
+
+date: "`r Sys.Date()`"  
+
 ---
 
 

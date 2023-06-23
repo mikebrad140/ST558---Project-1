@@ -1,6 +1,7 @@
 # ST558 Project 1
 # Programmer: Michael Bradshaw
 # Date: 6/15/23
+# R code to get everything correct, before loading into RMD file.
 
 #packages to load:
 library(httr)
@@ -85,21 +86,20 @@ getRecipeNutritionById <- function(recipe_id) {
   return(parsed_data)
 }
 
-# Pulling pasta recipes that are ready in 45 minutes
+# Pulling pasta recipes with cheese and without tomato that are ready in 45 minutes
 apiKey <- "6495f41712b644cebe48728831b9d5b1"
 query <- "pasta"
 cuisine <- NULL
 diet <- NULL
 includeIngredients <- "cheese"
-excludeIngredients <- NULL
+excludeIngredients <- "tomato"
 maxReadyTime <- 45
 number <- 100
 
 # set query, includeIngredients, maxReadyTime, and number - all others to NULL
 recipes <- getRecipes(apiKey, query, cuisine, diet, includeIngredients, excludeIngredients, maxReadyTime, number)
-
-# Nest step: - create data frame from our recipes of interest
-
+recipes$title
+# Next step: - create data frame from our recipes of interest
 # pull together the data
 recipe_df1 <- data.frame()
 
@@ -201,6 +201,9 @@ recipe_df1 %>%
             min_price = min(pricePerServing),
             max_price = max(pricePerServing))
 
+
+
+
 # Summary 2:  Number of calories by Yummy Categories
 recipe_df1 %>% 
   mutate(calories = as.numeric(calories)) %>%
@@ -211,9 +214,9 @@ recipe_df1 %>%
             min_calories = min(calories),
             max_calories = max(calories))
 
-# Summary 3: Health score by Dairy Free
+# Summary 3: Health score by Vegetarian
 recipe_df1 %>%
-  group_by(dairyFree) %>%
+  group_by(vegetarian) %>%
   summarize(n_recipes = n(),
             mean_healthScore = mean(healthScore),
             median_healthScore = median(healthScore),
@@ -240,12 +243,12 @@ hist_plot <- ggplot(recipe_df1, aes(x = yummyScore)) +
 hist_plot
 
 # 2nd plot: Box plot showing Distribution of Health Scores by Expensive
-box_plot <- ggplot(recipe_df1, aes(x = expensive, y = healthScore, fill = expensive)) +
+box_plot1 <- ggplot(recipe_df1, aes(x = expensive, y = healthScore, fill = expensive)) +
   geom_boxplot() +
   labs(x = "Expensive", y = "Health Scores", title = "Health Scores by Expensive Category") +
   theme_classic()
 
-box_plot
+box_plot1
 
 # 3rd plot: Scatter plot showing calories by Price Per Serving
 recipe_df1$pricePerServing <- as.numeric(recipe_df1$pricePerServing)
@@ -253,36 +256,32 @@ recipe_df1$calories <- as.numeric(recipe_df1$calories)
 
 correlation <- cor(as.numeric(recipe_df1$calories), recipe_df1$pricePerServing)
 
-scatter_plot <- ggplot(recipe_df1, aes(x = calories, y = pricePerServing, color=expensive)) +
+scatter_plot <- ggplot(recipe_df1, aes(x = calories, y = pricePerServing, color=yummyCategory)) +
   geom_point() +
   scale_x_continuous(breaks = seq(0, 1000, 100))+
   labs(x = "Calories", y = "Price Per Serving", title = "Calories vs. Price Per Serving") +
   theme_classic()
 
 scatter_plot +
-  geom_label(x = 200, y = 600, size = 4, 
+  geom_label(x = 300, y = 600, size = 4, 
             label = paste0("Correlation = ", round(correlation, 2)), show.legend = FALSE)
 
 # 4th plot: Bar plot of counts for high health score and yummy category
-bar_plot <- ggplot(recipe_df1, aes(x = highHealthScore, fill = yummyCategory)) +
+bar_plot1 <- ggplot(recipe_df1, aes(x = highHealthScore, fill = yummyCategory)) +
   geom_bar(position = "dodge") +
   labs(x = "High Health Score", y = "Count of Recipes", title = "Count of Recipes by Yummy Categories and High Health Score") +
   scale_fill_manual(values = c("lightblue", "lightpink", "lightgreen", "lightyellow")) +
   theme_light()
 
-bar_plot
+bar_plot1
 
-# 5th plot: Box plot of protein content by dairy-free category
+# 5th plot: Box plot of fat content by yummy category
 recipe_df1$protein_num <- as.integer(gsub("g", "", recipe_df1$protein))
+recipe_df1$fat_num <- as.integer(gsub("g", "", recipe_df1$fat))
 
-box_plot2 <- ggplot(recipe_df1, aes(x = dairyFree, y = protein_num, fill = dairyFree)) +
+box_plot2 <- ggplot(recipe_df1, aes(x = yummyCategory, y = fat_num, fill = yummyCategory)) +
   geom_boxplot() +
-  labs(x = "Dairy-Free", y = "Protein Content in grams", title = "Distribution of Protein Content by Dairy-Free Category") +
-  theme_minimal() +
-  scale_fill_manual(values = c("red", "gray"), labels = c("Not Dairy-Free", "Dairy-Free")) +
-  guides(fill = guide_legend(title = "Dairy-Free"))
+  labs(x = "Yummy Category", y = "Fat Content in grams", title = "Fat Content (grams) by Yummy Category") + guides(fill = "none") +
+  theme_classic() 
 
 box_plot2
-
-
-recipe_df1$title

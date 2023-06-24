@@ -1,9 +1,7 @@
-ST558: Project 1 - Contacting the Spoonacular API using functions to
-query, parse, and return well-structured data. Then doing some EDA on
-the resulting data.
+ST558: Project 1
 ================
 Michael Bradshaw
-2023-06-23
+2023-06-24
 
 ### Spoonacular API - To examine the relationships between ingredients, recipes, and nutrition
 
@@ -326,10 +324,11 @@ recipe_df1 %>%
 ```
 
     ## # A tibble: 2 × 6
-    ##   vegetarian n_recipes mean_healthScore median_healthScore min_healthScore max_healthScore
-    ##   <lgl>          <int>            <dbl>              <int>           <int>           <int>
-    ## 1 FALSE             89             23.1                 18               0             100
-    ## 2 TRUE               7             33.3                 23               5              86
+    ##   vegetarian n_recipes mean_healthScore median_healthScore min_healthScore
+    ##   <lgl>          <int>            <dbl>              <int>           <int>
+    ## 1 FALSE             89             23.1                 18               0
+    ## 2 TRUE               7             33.3                 23               5
+    ## # ℹ 1 more variable: max_healthScore <int>
 
 On average, Vegetarian recipes have higher mean health scores compared
 to non-vegetarian recipes. However, we also see that non-vegetarian
@@ -347,12 +346,13 @@ recipe_df1 %>%
 ```
 
     ## # A tibble: 4 × 6
-    ##   yummyCategory n_recipes mean_readyInMinutes median_readyInMinutes min_readyInMinutes max_readyInMinutes
-    ##   <fct>             <int>               <dbl>                 <dbl>              <int>              <int>
-    ## 1 Yuck                 24                44.8                    45                 40                 45
-    ## 2 Not Yummy            24                41.9                    45                 15                 45
-    ## 3 Yummy                24                42.1                    45                 25                 45
-    ## 4 Super Yummy          24                40.4                    45                 20                 45
+    ##   yummyCategory n_recipes mean_readyInMinutes median_readyInMinutes
+    ##   <fct>             <int>               <dbl>                 <dbl>
+    ## 1 Yuck                 24                44.8                    45
+    ## 2 Not Yummy            24                41.9                    45
+    ## 3 Yummy                24                42.1                    45
+    ## 4 Super Yummy          24                40.4                    45
+    ## # ℹ 2 more variables: min_readyInMinutes <int>, max_readyInMinutes <int>
 
 This table shows very little variation in the mean ready in minutes time
 across the yummy categories. We note that most recipes seem to be ready
